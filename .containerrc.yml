@@ -1,0 +1,46 @@
+# GitHub PR Dashboard
+
+name: github-pr-dashboard
+version: 1.0.0
+
+services:
+  # Backend API Service
+  server:
+    type: node
+    runtime: node:20-alpine
+    port: 3001
+    health_check: /api/health
+    environment:
+      - GITHUB_TOKEN
+      - REPOSITORIES
+      - TEAM_MEMBERS
+    
+  # Frontend Service
+  client:
+    type: static
+    runtime: nginx:1.25-alpine
+    port: 80
+    depends_on:
+      - server
+
+architecture:
+  - Multi-stage Docker builds
+  - Alpine Linux for minimal footprint
+  - Non-root user execution
+  - Health monitoring
+  - Network isolation
+
+security:
+  - Read-only filesystems
+  - No privilege escalation
+  - Secure signal handling (dumb-init)
+  - Security headers
+  - Container isolation
+
+optimization:
+  - Layer caching
+  - Multi-stage builds
+  - Gzip compression
+  - Static asset caching
+  - Minimal dependencies
+

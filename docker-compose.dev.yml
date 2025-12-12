@@ -1,0 +1,34 @@
+# Development override for docker-compose
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+      target: builder  # Use builder stage for dev dependencies
+    volumes:
+      # Mount source code for hot reloading
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["npx", "nodemon", "server/index.js"]
+    # Remove read-only restriction for development
+    read_only: false
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    volumes:
+      # Mount source code for hot reloading
+      - ./client/src:/app/src
+      - ./client/public:/app/public
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "${CLIENT_PORT:-3000}:3000"
+

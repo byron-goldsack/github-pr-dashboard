@@ -1,0 +1,48 @@
+name: Docker Image Size Check
+
+on:
+  pull_request:
+    paths:
+      - '**/Dockerfile'
+      - '**/package*.json'
+      - 'docker-compose*.yml'
+
+jobs:
+  check-size:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Client image
+        run: |
+          docker build -t pr-dashboard-client:test ./client
+          CLIENT_SIZE=$(docker images pr-dashboard-client:test --format "{{.Size}}")
+          echo "Client image size: $CLIENT_SIZE"
+          echo "CLIENT_SIZE=$CLIENT_SIZE" >> $GITHUB_ENV
+
+      - name: Build Server image
+        run: |
+          docker build -t pr-dashboard-server:test ./server
+          SERVER_SIZE=$(docker images pr-dashboard-server:test --format "{{.Size}}")
+          echo "Server image size: $SERVER_SIZE"
+          echo "SERVER_SIZE=$SERVER_SIZE" >> $GITHUB_ENV
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🐳 Docker Image Sizes\n\n` +
+                    `- **Client:** ${process.env.CLIENT_SIZE}\n` +
+                    `- **Server:** ${process.env.SERVER_SIZE}\n\n` +
+                    `*Built with Alpine Linux for minimal footprint*`
+            })
+

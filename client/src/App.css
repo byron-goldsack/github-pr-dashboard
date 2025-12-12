@@ -50,7 +50,7 @@
   --header-bg-end: #182848;
 }
 
-html.dark-mode {
+html[data-theme='dark'] {
   /* Backgrounds */
   --bg-primary: #0d1117;
   --bg-secondary: #161b22;
@@ -93,6 +93,285 @@ html.dark-mode {
   /* Header */
   --header-bg-start: #6366f1;
   --header-bg-end: #2d3748;
+}
+
+html[data-theme='ocean'] {
+  /* Backgrounds */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #020617;
+  --bg-hover: #334155;
+  
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  
+  /* Border & Dividers */
+  --border-color: #334155;
+  --border-color-light: #1e293b;
+  
+  /* Brand Colors */
+  --primary-color: #38bdf8;
+  --primary-hover: #0ea5e9;
+  --primary-light: rgba(56, 189, 248, 0.15);
+  
+  /* Status Colors */
+  --success-color: #4ade80;
+  --success-light: #14532d;
+  --success-dark: #22c55e;
+  --danger-color: #f87171;
+  --danger-light: #450a0a;
+  --warning-color: #facc15;
+  --warning-light: #422006;
+  --info-color: #60a5fa;
+  
+  /* Semantic Colors */
+  --repo-color: #7dd3fc;
+  --branch-color: #4ade80;
+  --draft-color: #94a3b8;
+  
+  /* Code & Syntax */
+  --code-bg: #1e293b;
+  --code-text: #f8fafc;
+  
+  /* Header */
+  --header-bg-start: #0ea5e9;
+  --header-bg-end: #0f172a;
+}
+
+html[data-theme='sunset'] {
+  /* Backgrounds */
+  --bg-primary: #2a1b24;
+  --bg-secondary: #452636;
+  --bg-tertiary: #1f111a;
+  --bg-hover: #5d3348;
+  
+  /* Text Colors */
+  --text-primary: #ffe6ea;
+  --text-secondary: #d6abc0;
+  --text-tertiary: #9e758c;
+  
+  /* Border & Dividers */
+  --border-color: #5d3348;
+  --border-color-light: #452636;
+  
+  /* Brand Colors */
+  --primary-color: #fb923c;
+  --primary-hover: #f97316;
+  --primary-light: rgba(251, 146, 60, 0.15);
+  
+  /* Status Colors */
+  --success-color: #fca5a5;
+  --success-light: #451a1a;
+  --success-dark: #f87171;
+  --danger-color: #f87171;
+  --danger-light: #451a1a;
+  --warning-color: #fbbf24;
+  --warning-light: #451a03;
+  --info-color: #f472b6;
+  
+  /* Semantic Colors */
+  --repo-color: #fdba74;
+  --branch-color: #fca5a5;
+  --draft-color: #d6abc0;
+  
+  /* Code & Syntax */
+  --code-bg: #452636;
+  --code-text: #ffe6ea;
+  
+  /* Header */
+  --header-bg-start: #db2777;
+  --header-bg-end: #4c1d95;
+}
+
+html[data-theme='solarized-light'] {
+  /* Backgrounds */
+  --bg-primary: #fdf6e3;
+  --bg-secondary: #eee8d5;
+  --bg-tertiary: #fdf6e3;
+  --bg-hover: #e5dfca;
+  
+  /* Text Colors */
+  --text-primary: #586e75;
+  --text-secondary: #93a1a1;
+  --text-tertiary: #aab7b8;
+  
+  /* Border & Dividers */
+  --border-color: #d3ccb8;
+  --border-color-light: #eee8d5;
+  
+  /* Brand Colors */
+  --primary-color: #268bd2;
+  --primary-hover: #2aa198;
+  --primary-light: rgba(38, 139, 210, 0.15);
+  
+  /* Status Colors */
+  --success-color: #859900;
+  --success-light: #e4eec9;
+  --success-dark: #6c7c00;
+  --danger-color: #dc322f;
+  --danger-light: #f6d4d3;
+  --warning-color: #b58900;
+  --warning-light: #fef6d9;
+  --info-color: #268bd2;
+  
+  /* Semantic Colors */
+  --repo-color: #268bd2;
+  --branch-color: #859900;
+  --draft-color: #93a1a1;
+  
+  /* Code & Syntax */
+  --code-bg: #eee8d5;
+  --code-text: #586e75;
+  
+  /* Header */
+  --header-bg-start: #b58900;
+  --header-bg-end: #cb4b16;
+}
+
+html[data-theme='solarized-dark'] {
+  /* Backgrounds */
+  --bg-primary: #002b36;
+  --bg-secondary: #073642;
+  --bg-tertiary: #00212b;
+  --bg-hover: #0d4653;
+  
+  /* Text Colors */
+  --text-primary: #93a1a1;
+  --text-secondary: #586e75;
+  --text-tertiary: #495e65;
+  
+  /* Border & Dividers */
+  --border-color: #0d4653;
+  --border-color-light: #073642;
+  
+  /* Brand Colors */
+  --primary-color: #268bd2;
+  --primary-hover: #2aa198;
+  --primary-light: rgba(38, 139, 210, 0.15);
+  
+  /* Status Colors */
+  --success-color: #859900;
+  --success-light: #18230f;
+  --success-dark: #719e07;
+  --danger-color: #dc322f;
+  --danger-light: #301010;
+  --warning-color: #b58900;
+  --warning-light: #281e00;
+  --info-color: #268bd2;
+  
+  /* Semantic Colors */
+  --repo-color: #268bd2;
+  --branch-color: #859900;
+  --draft-color: #586e75;
+  
+  /* Code & Syntax */
+  --code-bg: #073642;
+  --code-text: #93a1a1;
+  
+  /* Header */
+  --header-bg-start: #073642;
+  --header-bg-end: #002b36;
+}
+
+html[data-theme='monokai'] {
+  /* Backgrounds */
+  --bg-primary: #272822;
+  --bg-secondary: #3e3d32;
+  --bg-tertiary: #1e1f1c;
+  --bg-hover: #49483e;
+  
+  /* Text Colors */
+  --text-primary: #f8f8f2;
+  --text-secondary: #a59f85;
+  --text-tertiary: #75715e;
+  
+  /* Border & Dividers */
+  --border-color: #49483e;
+  --border-color-light: #3e3d32;
+  
+  /* Brand Colors */
+  --primary-color: #fd971f;
+  --primary-hover: #e69f66;
+  --primary-light: rgba(253, 151, 31, 0.15);
+  
+  /* Status Colors */
+  --success-color: #a6e22e;
+  --success-light: #1e2b0a;
+  --success-dark: #a6e22e;
+  --danger-color: #f92672;
+  --danger-light: #300a16;
+  --warning-color: #e6db74;
+  --warning-light: #2d2b16;
+  --info-color: #66d9ef;
+  
+  /* Semantic Colors */
+  --repo-color: #66d9ef;
+  --branch-color: #a6e22e;
+  --draft-color: #75715e;
+  
+  /* Code & Syntax */
+  --code-bg: #3e3d32;
+  --code-text: #f8f8f2;
+  
+  /* Header */
+  --header-bg-start: #f92672;
+  --header-bg-end: #fd971f;
+}
+
+html[data-theme='gruvbox'] {
+  /* Backgrounds */
+  --bg-primary: #282828;
+  --bg-secondary: #3c3836;
+  --bg-tertiary: #1d2021;
+  --bg-hover: #504945;
+  
+  /* Text Colors */
+  --text-primary: #ebdbb2;
+  --text-secondary: #a89984;
+  --text-tertiary: #928374;
+  
+  /* Border & Dividers */
+  --border-color: #504945;
+  --border-color-light: #3c3836;
+  
+  /* Brand Colors */
+  --primary-color: #d79921;
+  --primary-hover: #fabd2f;
+  --primary-light: rgba(215, 153, 33, 0.15);
+  
+  /* Status Colors */
+  --success-color: #98971a;
+  --success-light: #1d2021;
+  --success-dark: #b8bb26;
+  --danger-color: #cc241d;
+  --danger-light: #1d2021;
+  --warning-color: #d79921;
+  --warning-light: #1d2021;
+  --info-color: #458588;
+  
+  /* Semantic Colors */
+  --repo-color: #83a598;
+  --branch-color: #b8bb26;
+  --draft-color: #928374;
+  
+  /* Code & Syntax */
+  --code-bg: #3c3836;
+  --code-text: #ebdbb2;
+  
+  /* Header */
+  --header-bg-start: #cc241d;
+  --header-bg-end: #d65d0e;
+}
+
+/* Maintain compatibility with .dark-mode class for now (App.js adds it for dark themes) */
+html.dark-mode {
+  /* This rule is kept to ensure specific selectors in other files (like DiffViewer.css) still work.
+     The variables above will override if data-theme matches. 
+     If data-theme is not matched but class is present, we might want fallback, 
+     but we are setting data-theme always. 
+  */
 }
 
 body {
@@ -153,7 +432,6 @@ html.dark-mode .header {
   align-items: center;
 }
 
-.dark-mode-toggle,
 .compact-mode-toggle {
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -170,11 +448,51 @@ html.dark-mode .header {
   height: 40px;
 }
 
-.dark-mode-toggle:hover,
 .compact-mode-toggle:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
 }
+
+.theme-selector-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.theme-select {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 40px;
+  font-weight: 600;
+  appearance: none;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1em;
+}
+
+.theme-select:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.theme-select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-select option {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
 
 .stat {
   display: flex;

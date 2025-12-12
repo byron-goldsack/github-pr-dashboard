@@ -2,6 +2,9 @@
 
 A simple web dashboard to view all pull requests from your team across multiple GitHub repositories.
 
+> 🐳 **NEW: Fully Containerized!** This application is now Docker-ready with production-grade configuration.  
+> See **[CONTAINERIZATION-SUMMARY.md](CONTAINERIZATION-SUMMARY.md)** for a complete overview.
+
 ## Features
 
 - 📊 View all open PRs from your team across multiple repositories
@@ -14,9 +17,36 @@ A simple web dashboard to view all pull requests from your team across multiple 
 - ▤ Compact mode for viewing more PRs on screen
 - 📱 Responsive design
 - 🎨 Clean, modern UI
+- 🐳 **Docker support for easy deployment**
+
+## Quick Start with Docker
+
+The fastest way to get started is with Docker:
+
+```bash
+# Copy environment template
+cp env.example .env
+
+# Edit .env with your GitHub token and repositories
+# GITHUB_TOKEN=your_token
+# REPOSITORIES=owner/repo1,owner/repo2
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Access at http://localhost:3000
+```
+
+📖 **[Full Docker documentation →](DOCKER.md)**
 
 ## Prerequisites
 
+### With Docker (Recommended)
+- Docker 20.10+
+- Docker Compose 2.0+
+- GitHub Personal Access Token
+
+### Without Docker
 - Node.js (v14 or higher)
 - npm or yarn
 - GitHub Personal Access Token
@@ -160,6 +190,34 @@ Returns all open PRs from configured repositories, filtered by team members.
 
 Health check endpoint to verify configuration.
 
+## Deployment
+
+### Docker (Recommended)
+
+See **[DOCKER.md](DOCKER.md)** for comprehensive Docker deployment guide including:
+- Production deployment strategies
+- Security best practices
+- Cloud deployment options (AWS, Azure, GCP)
+- Kubernetes deployment
+- Resource management
+- Monitoring and health checks
+
+### Traditional Deployment
+
+For production without Docker:
+
+1. Build the client:
+   ```bash
+   npm run build
+   ```
+
+2. Serve the built files with your web server (nginx, Apache, etc.)
+
+3. Start the backend server:
+   ```bash
+   NODE_ENV=production npm start
+   ```
+
 ## Troubleshooting
 
 ### "GitHub token not configured" error
@@ -181,6 +239,10 @@ Make sure you're using a valid `GITHUB_TOKEN` to get higher rate limits.
 ### CORS errors
 
 If you see CORS errors in the browser console, make sure the backend server is running on port 3001 and the frontend is connecting to the correct URL.
+
+### Docker Issues
+
+See the **[Docker troubleshooting section](DOCKER.md#-troubleshooting)** in DOCKER.md for container-specific issues.
 
 ## License
 
