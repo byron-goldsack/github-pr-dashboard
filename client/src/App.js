@@ -8,10 +8,18 @@ function App() {
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({ totalCount: 0, repositories: 0, teamMembers: 0 });
   const [lastRefresh, setLastRefresh] = useState(null);
-  const [darkMode, setDarkMode] = useState(() => {
+  const [theme, setTheme] = useState(() => {
     // Check localStorage for saved preference
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
+    const saved = localStorage.getItem('theme');
+    if (saved) return JSON.parse(saved);
+    
+    // Legacy support: check for darkMode
+    const savedDark = localStorage.getItem('darkMode');
+    if (savedDark) {
+      return JSON.parse(savedDark) ? 'dark' : 'light';
+    }
+    
+    return 'light';
   });
   
   const [compactMode, setCompactMode] = useState(() => {
@@ -40,7 +48,7 @@ function App() {
     setError(null);
     
     try {
-      const response = await fetch('http://wsap1580:3001/api/prs');
+      const response = await fetch('/api/prs');
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -67,14 +75,17 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Save dark mode preference and apply to document
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
-    if (darkMode) {
+    // Save theme preference and apply to document
+    localStorage.setItem('theme', JSON.stringify(theme));
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Legacy class for backward compatibility with existing CSS
+    if (['dark', 'ocean', 'sunset', 'solarized-dark', 'monokai', 'gruvbox'].includes(theme)) {
       document.documentElement.classList.add('dark-mode');
     } else {
       document.documentElement.classList.remove('dark-mode');
     }
-  }, [darkMode]);
+  }, [theme]);
 
   useEffect(() => {
     // Save compact mode preference
@@ -97,8 +108,8 @@ function App() {
     };
   }, []);
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
   };
 
   const toggleCompactMode = () => {
@@ -209,9 +220,23 @@ function App() {
             <button onClick={toggleCompactMode} className="compact-mode-toggle" title="Toggle compact mode">
               {compactMode ? '☰' : '▤'}
             </button>
-            <button onClick={toggleDarkMode} className="dark-mode-toggle" title="Toggle dark mode">
-              {darkMode ? '☀️' : '🌙'}
-            </button>
+            <div className="theme-selector-wrapper">
+              <select 
+                value={theme} 
+                onChange={(e) => handleThemeChange(e.target.value)}
+                className="theme-select"
+                title="Select Theme"
+              >
+                <option value="light">☀️ Light</option>
+                <option value="dark">🌙 Dark</option>
+                <option value="ocean">🌊 Ocean</option>
+                <option value="sunset">🌅 Sunset</option>
+                <option value="solarized-light">☀️ Solarized Light</option>
+                <option value="solarized-dark">🌙 Solarized Dark</option>
+                <option value="monokai">🎨 Monokai</option>
+                <option value="gruvbox">🟫 Gruvbox</option>
+              </select>
+            </div>
             <button onClick={fetchPRs} className="refresh-btn" disabled={loading}>
               {loading ? '⟳' : '↻'}
             </button>

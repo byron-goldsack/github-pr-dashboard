@@ -108,7 +108,7 @@ const DiffViewer = ({ owner, repo, prNumber, onClose }) => {
       
       try {
         console.log(`Fetching diff for PR #${prNumber}...`);
-        const response = await fetch(`http://wsap1580:3001/api/prs/${owner}/${repo}/${prNumber}/files`);
+        const response = await fetch(`/api/prs/${owner}/${repo}/${prNumber}/files`);
         
         if (!response.ok) {
           const errorData = await response.json();
