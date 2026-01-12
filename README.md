@@ -14,6 +14,7 @@ A simple web dashboard to view all pull requests from your team across multiple 
 - ▤ Compact mode for viewing more PRs on screen
 - 📱 Responsive design
 - 🎨 Clean, modern UI
+- 🔗 TFS Work Item integration - automatically fetches and displays work items linked in PR descriptions
 
 ## Prerequisites
 
@@ -126,6 +127,8 @@ Once the application is running:
 
 \* If `TEAM_MEMBERS` is empty, the dashboard will show PRs from all authors in the configured repositories.
 
+**Note:** TFS work items are automatically detected from PR descriptions using the pattern `#XXXXXX` (6-digit work item IDs). Authentication uses your current Windows credentials automatically.
+
 ## API Endpoints
 
 ### `GET /api/prs`
@@ -181,6 +184,14 @@ Make sure you're using a valid `GITHUB_TOKEN` to get higher rate limits.
 ### CORS errors
 
 If you see CORS errors in the browser console, make sure the backend server is running on port 3001 and the frontend is connecting to the correct URL.
+
+### TFS Work Item Issues
+
+TFS work items are fetched using PowerShell with your Windows credentials (same as running scripts manually). If work items aren't loading:
+
+1. **Verify you can access TFS** - Make sure you can access https://tfs.aderant.com in your browser
+2. **Check the server console** for specific error messages
+3. **Note**: Work items are extracted from PR descriptions using the pattern `#XXXXXX` (hash followed by exactly 6 digits). Only the first 3 work items per PR are displayed.
 
 ## License
 

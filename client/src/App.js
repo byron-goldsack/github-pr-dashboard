@@ -405,6 +405,22 @@ function App() {
                           >
                             {pr.title}
                           </a>
+                          {pr.workItems && pr.workItems.length > 0 && (
+                            <div className="pr-work-items-compact">
+                              {pr.workItems.map(workItem => (
+                                <a 
+                                  key={workItem.id}
+                                  href={workItem.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="work-item-link-compact"
+                                  title={workItem.title}
+                                >
+                                  #{workItem.id}
+                                </a>
+                              ))}
+                            </div>
+                          )}
                           <div className="pr-compact-meta">
                             <span className="pr-author">@{pr.author}</span>
                             <button 
@@ -449,6 +465,24 @@ function App() {
                           <div className="pr-time">
                             Updated {formatDate(pr.updatedAt)}
                           </div>
+                          
+                          {/* Work Items Section */}
+                          {pr.workItems && pr.workItems.length > 0 && (
+                            <div className="pr-work-items">
+                              {pr.workItems.map(workItem => (
+                                <a 
+                                  key={workItem.id}
+                                  href={workItem.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="work-item-link"
+                                  title={workItem.title}
+                                >
+                                  #{workItem.id}: {workItem.title.length > 60 ? `${workItem.title.substring(0, 60)}...` : workItem.title}
+                                </a>
+                              ))}
+                            </div>
+                          )}
                           
                           {/* Reviewers Section */}
                           {(pr.requestedReviewers?.length > 0 || pr.requestedTeams?.length > 0) && (

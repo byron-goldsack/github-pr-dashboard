@@ -2,6 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const fetch = require('node-fetch');
+const { exec } = require('child_process');
+const util = require('util');
+
+const execAsync = util.promisify(exec);
 
 dotenv.config();
 
@@ -24,6 +28,54 @@ const getConfig = () => {
   const token = process.env.GITHUB_TOKEN;
 
   return { repositories, teamMembers, token };
+};
+
+// Extract work item IDs from PR description
+const extractWorkItemIds = (text) => {
+  if (!text) return [];
+  
+  // Match #XXXXXX pattern (hash followed by 6 digits)
+  const regex = /#(\d{6})/g;
+  const matches = [];
+  let match;
+  
+  while ((match = regex.exec(text)) !== null) {
+    matches.push(match[1]);
+  }
+  
+  // Return unique IDs, limited to first 3
+  return [...new Set(matches)].slice(0, 3);
+};
+
+// Fetch TFS work item title using PowerShell with Windows integrated authentication
+const fetchTfsWorkItem = async (workItemId) => {
+  const serverBase = "https://tfs.aderant.com/tfs/ADERANT";
+  const apiUrl = `${serverBase}/_apis/wit/workitems/${workItemId}?api-version=1.0`;
+  
+  // Simple PowerShell command - just get the title field directly
+  const psCommand = `(Invoke-RestMethod -Uri '${apiUrl}' -UseDefaultCredentials).fields.'System.Title'`;
+  
+  try {
+    const { stdout, stderr } = await execAsync(`powershell -NoProfile -Command "${psCommand}"`, {
+      timeout: 10000 // 10 second timeout
+    });
+    
+    const title = stdout.trim();
+    
+    if (title) {
+      return {
+        id: workItemId,
+        title: title,
+        url: `${serverBase}/_workitems/edit/${workItemId}`
+      };
+    }
+    
+    console.error(`No title returned for TFS work item ${workItemId}`);
+    return null;
+  } catch (error) {
+    console.error(`Error fetching TFS work item ${workItemId}:`, error.message);
+    return null;
+  }
 };
 
 // Fetch PRs from a single repository
@@ -50,8 +102,8 @@ const fetchRepoPRs = async (repo, token) => {
     
     const prs = await response.json();
     
-    // Add repository info to each PR
-    return prs.map(pr => {
+    // Process each PR and fetch work items
+    const processedPRs = await Promise.all(prs.map(async pr => {
       // Extract requested reviewers (individual users)
       const requestedReviewers = pr.requested_reviewers 
         ? pr.requested_reviewers.map(reviewer => ({
@@ -68,10 +120,22 @@ const fetchRepoPRs = async (repo, token) => {
           }))
         : [];
 
+      // Extract work item IDs from PR body
+      const workItemIds = extractWorkItemIds(pr.body);
+      
+      // Fetch work item details from TFS
+      const workItems = await Promise.all(
+        workItemIds.map(id => fetchTfsWorkItem(id))
+      );
+      
+      // Filter out any failed fetches
+      const validWorkItems = workItems.filter(item => item !== null);
+
       return {
         id: pr.id,
         number: pr.number,
         title: pr.title,
+        body: pr.body || '',
         author: pr.user.login,
         authorAvatar: pr.user.avatar_url,
         repository: repo,
@@ -83,9 +147,12 @@ const fetchRepoPRs = async (repo, token) => {
         targetBranch: pr.base.ref,
         sourceBranch: pr.head.ref,
         requestedReviewers,
-        requestedTeams
+        requestedTeams,
+        workItems: validWorkItems
       };
-    });
+    }));
+    
+    return processedPRs;
   } catch (error) {
     console.error(`Error fetching PRs from ${repo}:`, error.message);
     return [];
