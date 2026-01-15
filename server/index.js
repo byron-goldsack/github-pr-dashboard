@@ -54,15 +54,23 @@ const fetchTfsWorkItem = async (workItemId) => {
   
   // Simple PowerShell command - just get the title field directly
   const psCommand = `(Invoke-RestMethod -Uri '${apiUrl}' -UseDefaultCredentials).fields.'System.Title'`;
+  const fullCommand = `powershell -NoProfile -Command "${psCommand}"`;
+  
+  console.log(`[TFS] Fetching work item #${workItemId}...`);
   
   try {
-    const { stdout, stderr } = await execAsync(`powershell -NoProfile -Command "${psCommand}"`, {
+    const { stdout, stderr } = await execAsync(fullCommand, {
       timeout: 10000 // 10 second timeout
     });
     
     const title = stdout.trim();
     
+    if (stderr) {
+      console.warn(`[TFS] Work item #${workItemId} stderr: ${stderr.trim()}`);
+    }
+    
     if (title) {
+      console.log(`[TFS] Work item #${workItemId} title: "${title.substring(0, 50)}${title.length > 50 ? '...' : ''}"`);
       return {
         id: workItemId,
         title: title,
@@ -70,18 +78,28 @@ const fetchTfsWorkItem = async (workItemId) => {
       };
     }
     
-    console.error(`No title returned for TFS work item ${workItemId}`);
+    console.warn(`[TFS] Work item #${workItemId} - No title returned`);
+    console.warn(`[TFS]   URL: ${apiUrl}`);
+    console.warn(`[TFS]   stdout: "${stdout}"`);
     return null;
   } catch (error) {
-    console.error(`Error fetching TFS work item ${workItemId}:`, error.message);
+    console.error(`[TFS] Work item #${workItemId} - FAILED`);
+    console.error(`[TFS]   URL: ${apiUrl}`);
+    console.error(`[TFS]   Command: ${fullCommand}`);
+    console.error(`[TFS]   Error: ${error.message}`);
+    if (error.stderr) {
+      console.error(`[TFS]   stderr: ${error.stderr}`);
+    }
+    if (error.stdout) {
+      console.error(`[TFS]   stdout: ${error.stdout}`);
+    }
     return null;
   }
 };
 
-// Fetch PRs from a single repository
-const fetchRepoPRs = async (repo, token) => {
+// Fetch PRs from a single repository with pagination
+const fetchRepoPRs = async (repo, token, teamMembers = []) => {
   const [owner, repoName] = repo.split('/');
-  const url = `https://api.github.com/repos/${owner}/${repoName}/pulls?state=open`;
   
   const headers = {
     'Accept': 'application/vnd.github.v3+json',
@@ -93,16 +111,52 @@ const fetchRepoPRs = async (repo, token) => {
   }
 
   try {
-    const response = await fetch(url, { headers });
+    // Fetch all pages of PRs
+    const allPRs = [];
+    let page = 1;
+    const perPage = 100; // Maximum allowed by GitHub API
     
-    if (!response.ok) {
-      console.error(`Error fetching PRs from ${repo}: ${response.status} ${response.statusText}`);
-      return [];
+    while (true) {
+      const url = `https://api.github.com/repos/${owner}/${repoName}/pulls?state=open&per_page=${perPage}&page=${page}`;
+      console.log(`[GitHub] Fetching PRs from ${repo} (page ${page})...`);
+      
+      const response = await fetch(url, { headers });
+      
+      if (!response.ok) {
+        console.error(`Error fetching PRs from ${repo}: ${response.status} ${response.statusText}`);
+        return [];
+      }
+      
+      const prs = await response.json();
+      
+      if (prs.length === 0) {
+        break; // No more PRs
+      }
+      
+      allPRs.push(...prs);
+      console.log(`[GitHub] Fetched ${prs.length} PRs from ${repo} (page ${page}, total so far: ${allPRs.length})`);
+      
+      if (prs.length < perPage) {
+        break; // Last page
+      }
+      
+      page++;
     }
     
-    const prs = await response.json();
+    // Filter by team members EARLY - before fetching TFS work items
+    let prs = allPRs;
+    if (teamMembers.length > 0) {
+      const beforeFilter = prs.length;
+      const filteredOut = prs.filter(pr => !teamMembers.includes(pr.user.login));
+      prs = prs.filter(pr => teamMembers.includes(pr.user.login));
+      console.log(`[GitHub] ${repo}: Filtered by team members: ${beforeFilter} -> ${prs.length} PRs`);
+      if (filteredOut.length > 0) {
+        const skippedAuthors = [...new Set(filteredOut.map(pr => pr.user.login))];
+        console.log(`[GitHub] ${repo}: Skipped authors: ${skippedAuthors.join(', ')}`);
+      }
+    }
     
-    // Process each PR and fetch work items
+    // Process each PR and fetch work items (only for team members' PRs)
     const processedPRs = await Promise.all(prs.map(async pr => {
       // Extract requested reviewers (individual users)
       const requestedReviewers = pr.requested_reviewers 
@@ -176,21 +230,24 @@ app.get('/api/prs', async (req, res) => {
       });
     }
 
-    // Fetch PRs from all repositories in parallel
+    // Fetch PRs from all repositories in parallel (filtering by team members early)
     const allPRsArrays = await Promise.all(
-      repositories.map(repo => fetchRepoPRs(repo, token))
+      repositories.map(repo => fetchRepoPRs(repo, token, teamMembers))
     );
 
     // Flatten the array of arrays
     let allPRs = allPRsArrays.flat();
-
-    // Filter by team members if configured
-    if (teamMembers.length > 0) {
-      allPRs = allPRs.filter(pr => teamMembers.includes(pr.author));
-    }
+    console.log(`[GitHub] Total team PRs across all repos: ${allPRs.length}`);
 
     // Sort by updated date (most recent first)
     allPRs.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    
+    // Log summary of PRs by target branch
+    const branchSummary = {};
+    allPRs.forEach(pr => {
+      branchSummary[pr.targetBranch] = (branchSummary[pr.targetBranch] || 0) + 1;
+    });
+    console.log(`[GitHub] PRs by target branch:`, branchSummary);
 
     res.json({
       prs: allPRs,
